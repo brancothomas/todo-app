@@ -2,7 +2,7 @@
     "name": "Todo",
     "short_name": "Todo",
     "description": "A minimalist to-do list app",
-    "start_url": "/",
+    "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#F5C1CB",
@@ -19,4 +19,5 @@
             "type": "image/png"
         }
     ]
+
 }
