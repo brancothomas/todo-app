@@ -13,11 +13,11 @@
     --pastelPeach-bg: rgba(250, 217, 184, 0.3);
     --pastelMint: #CCF2DC;
     --pastelMint-bg: rgba(204, 242, 220, 0.3);
-    
+
     /* Active Theme (default: pastelPink) */
     --theme-color: var(--pastelPink);
     --theme-bg: var(--pastelPink-bg);
-    
+
     /* Neutrals */
     --bg-primary: #FFFFFF;
     --bg-secondary: #F5F5F7;
@@ -25,17 +25,19 @@
     --text-primary: #1D1D1F;
     --text-secondary: #86868B;
     --text-tertiary: #AEAEB2;
-    
+
     /* Spacing */
     --safe-area-top: env(safe-area-inset-top, 20px);
     --safe-area-bottom: env(safe-area-inset-bottom, 20px);
-    
+
     /* Typography */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* ===== Reset & Base ===== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -256,21 +258,47 @@ body {
     height: 12px;
 }
 
-.task-handle {
+.task-arrows {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    padding: 8px;
-    cursor: grab;
+    gap: 2px;
     flex-shrink: 0;
 }
 
-.task-handle span {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: var(--text-tertiary);
-    border-radius: 1px;
+.arrow-btn {
+    width: 32px;
+    height: 28px;
+    border: none;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+}
+
+.arrow-btn svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+}
+
+.arrow-btn:active {
+    background: var(--theme-bg);
+}
+
+.arrow-btn:active svg {
+    color: var(--theme-color);
+}
+
+.arrow-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.arrow-btn:disabled:active {
+    background: var(--bg-tertiary);
 }
 
 /* ===== Floating Action Button ===== */
@@ -286,7 +314,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     z-index: 10;
@@ -388,15 +416,15 @@ body {
     bottom: 2px;
     background: white;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s;
 }
 
-.toggle input:checked + .toggle-slider {
+.toggle input:checked+.toggle-slider {
     background: var(--theme-color);
 }
 
-.toggle input:checked + .toggle-slider::before {
+.toggle input:checked+.toggle-slider::before {
     transform: translateX(20px);
 }
 
@@ -511,7 +539,7 @@ body {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     display: none;
     align-items: flex-start;
     justify-content: center;
@@ -532,7 +560,7 @@ body {
     background: var(--bg-primary);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     transform: translateY(-20px);
     transition: transform 0.3s;
 }
@@ -592,7 +620,8 @@ body {
     gap: 12px;
 }
 
-.btn-cancel, .btn-confirm {
+.btn-cancel,
+.btn-confirm {
     padding: 10px 20px;
     border: none;
     border-radius: 10px;
@@ -636,8 +665,15 @@ body {
 
 /* ===== Animations ===== */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .task-item {

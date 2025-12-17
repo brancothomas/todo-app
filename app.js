@@ -96,14 +96,13 @@ function renderTasks() {
         elements.taskList.classList.remove('hidden');
         elements.fabAdd.style.display = 'flex';
 
-        elements.taskList.innerHTML = incompleteTasks.map(task => createTaskHTML(task)).join('');
-        setupDragAndDrop();
+        elements.taskList.innerHTML = incompleteTasks.map((task, index) => createTaskHTML(task, index, incompleteTasks.length)).join('');
     }
 
     updateTaskCount();
 }
 
-function createTaskHTML(task) {
+function createTaskHTML(task, index, totalTasks) {
     const reminderHTML = task.datetime ? `
         <div class="task-reminder">
             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -114,7 +113,7 @@ function createTaskHTML(task) {
     ` : '';
 
     return `
-        <div class="task-item" data-id="${task.id}" draggable="true">
+        <div class="task-item" data-id="${task.id}">
             <div class="task-checkbox" onclick="completeTask('${task.id}')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -124,10 +123,17 @@ function createTaskHTML(task) {
                 <div class="task-title">${escapeHTML(task.title)}</div>
                 ${reminderHTML}
             </div>
-            <div class="task-handle">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="task-arrows">
+                <button class="arrow-btn" onclick="moveTaskUp('${task.id}')" ${index === 0 ? 'disabled' : ''}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                </button>
+                <button class="arrow-btn" onclick="moveTaskDown('${task.id}')" ${index === totalTasks - 1 ? 'disabled' : ''}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
             </div>
         </div>
     `;
@@ -179,60 +185,36 @@ function updateTaskCount() {
     }
 }
 
-// ===== Drag and Drop =====
-let draggedItem = null;
+// ===== Move Tasks =====
+function moveTaskUp(id) {
+    const incompleteTasks = state.tasks.filter(t => !t.completed);
+    const index = incompleteTasks.findIndex(t => t.id === id);
 
-function setupDragAndDrop() {
-    const items = document.querySelectorAll('.task-item');
+    if (index > 0) {
+        // Swap in the main tasks array
+        const taskIndex = state.tasks.findIndex(t => t.id === id);
+        const prevTask = incompleteTasks[index - 1];
+        const prevIndex = state.tasks.findIndex(t => t.id === prevTask.id);
 
-    items.forEach(item => {
-        item.addEventListener('dragstart', handleDragStart);
-        item.addEventListener('dragend', handleDragEnd);
-        item.addEventListener('dragover', handleDragOver);
-        item.addEventListener('drop', handleDrop);
-    });
-}
-
-function handleDragStart(e) {
-    draggedItem = this;
-    this.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragEnd() {
-    this.classList.remove('dragging');
-    draggedItem = null;
-}
-
-function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-
-    if (draggedItem !== this) {
-        const items = [...document.querySelectorAll('.task-item')];
-        const fromIndex = items.indexOf(draggedItem);
-        const toIndex = items.indexOf(this);
-
-        // Reorder in DOM
-        if (fromIndex < toIndex) {
-            this.parentNode.insertBefore(draggedItem, this.nextSibling);
-        } else {
-            this.parentNode.insertBefore(draggedItem, this);
-        }
-
-        // Reorder in state
-        const taskIds = [...document.querySelectorAll('.task-item')].map(el => el.dataset.id);
-        const incompleteTasks = state.tasks.filter(t => !t.completed);
-        const completedTasks = state.tasks.filter(t => t.completed);
-
-        const reorderedTasks = taskIds.map(id => incompleteTasks.find(t => t.id === id)).filter(Boolean);
-        state.tasks = [...reorderedTasks, ...completedTasks];
-
+        [state.tasks[taskIndex], state.tasks[prevIndex]] = [state.tasks[prevIndex], state.tasks[taskIndex]];
         saveState();
+        renderTasks();
+    }
+}
+
+function moveTaskDown(id) {
+    const incompleteTasks = state.tasks.filter(t => !t.completed);
+    const index = incompleteTasks.findIndex(t => t.id === id);
+
+    if (index < incompleteTasks.length - 1) {
+        // Swap in the main tasks array
+        const taskIndex = state.tasks.findIndex(t => t.id === id);
+        const nextTask = incompleteTasks[index + 1];
+        const nextIndex = state.tasks.findIndex(t => t.id === nextTask.id);
+
+        [state.tasks[taskIndex], state.tasks[nextIndex]] = [state.tasks[nextIndex], state.tasks[taskIndex]];
+        saveState();
+        renderTasks();
     }
 }
 
